@@ -22,6 +22,7 @@ var user = flag.String("user", "scott", "Bind User")
 var password = flag.String("password", "", "User Password")
 var insecure = flag.Bool("insecure", false, "Skip verify for TLS")
 var cafile = flag.String("ca", "", "TLS CA certificate")
+var conffile = flag.String("config", "", "LDAPrc style config")
 
 func main() {
 	flag.Parse()

@@ -20,6 +20,7 @@ func loadDefaultConfig() {
 		home + "/.ldaprc",
 		"./ldaprc",
 		os.Getenv("LDAPCONF"),
+		*conffile,
 	}
 	if ldaprc := os.Getenv("LDAPRC"); ldaprc != "" {
 		filepaths = append(filepaths, home+"/"+ldaprc, home+"/."+ldaprc, "./"+ldaprc)
