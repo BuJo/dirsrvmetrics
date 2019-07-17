@@ -23,9 +23,17 @@ var password = flag.String("password", "", "User Password")
 var insecure = flag.Bool("insecure", false, "Skip verify for TLS")
 var cafile = flag.String("ca", "", "TLS CA certificate")
 var conffile = flag.String("config", "", "LDAPrc style config")
+var showversion = flag.Bool("version", false, "Show version")
+
+var version = "dev"
 
 func main() {
 	flag.Parse()
+
+	if *showversion {
+		fmt.Println("Version:", version)
+		return
+	}
 
 	loadDefaultConfig()
 
