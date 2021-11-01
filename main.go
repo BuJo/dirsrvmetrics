@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"gopkg.in/ldap.v3"
+	"github.com/go-ldap/ldap/v3"
 )
 
 var host = flag.String("host", "ldap://localhost:389", "Server URL")
