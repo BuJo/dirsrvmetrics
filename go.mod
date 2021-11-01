@@ -3,5 +3,5 @@ module github.com/BuJo/dirsrvmetrics
 go 1.12
 
 require (
-	github.com/go-ldap/ldap/v3 v3.1.3
+	github.com/go-ldap/ldap/v3 v3.4.1
 )
