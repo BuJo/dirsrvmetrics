@@ -1,6 +1,10 @@
 Changes
 =======
 
+## v0.6
+
+* Maintenance release.
+
 ## v0.5
 
 * Add program parameter for loading configuration from a non-standard location
