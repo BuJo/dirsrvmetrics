@@ -18,7 +18,7 @@ type Config struct {
 }
 
 func loadConfig() Config {
-	if noinit := os.Getenv("LDAPNOINIT"); noinit != "" || *host != "" && *conffile == "" {
+	if noinit := os.Getenv("LDAPNOINIT"); noinit != "" || *user != "" && *conffile == "" {
 		return Config{parseUrl(*host), *user, *password}
 	}
 

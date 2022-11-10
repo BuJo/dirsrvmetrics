@@ -14,7 +14,7 @@ import (
 )
 
 var host = flag.String("host", "ldap://localhost:389", "Server URL")
-var user = flag.String("user", "scott", "Bind User")
+var user = flag.String("user", "", "Bind User")
 var password = flag.String("password", "", "User Password")
 var insecure = flag.Bool("insecure", false, "Skip verify for TLS")
 var cafile = flag.String("ca", "", "TLS CA certificate")
@@ -32,7 +32,8 @@ func main() {
 	}
 
 	config := loadConfig()
-	conn := connectLdap(config)
+	conn, _ := connectLdap(config)
+	defer conn.Close()
 
 	searchRequest := ldap.NewSearchRequest(
 		"cn=Monitor",
@@ -44,7 +45,7 @@ func main() {
 
 	sr, err := conn.Search(searchRequest)
 	if err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 	}
 
 	values := make(map[string]int)

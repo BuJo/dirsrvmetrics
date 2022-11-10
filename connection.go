@@ -3,37 +3,33 @@ package main
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"io/ioutil"
 	"log"
 	"net/url"
+	"os"
 
 	"github.com/go-ldap/ldap/v3"
 )
 
-func connectLdap(config Config) (conn *ldap.Conn) {
+func connectLdap(config Config) (conn *ldap.Conn, err error) {
 	if config.Host.Scheme == "ldaps" {
-		conn, err := ldap.DialTLS("tcp", config.Host.Host, configureTLS(config.Host))
-		if err != nil {
-			log.Fatal(err)
+		if conn, err = ldap.DialTLS("tcp", config.Host.Host, configureTLS(config.Host)); err != nil {
+			log.Panicln(err)
 		}
-		defer conn.Close()
 	} else {
-		conn, err := ldap.Dial("tcp", config.Host.Host)
-		if err != nil {
-			log.Fatal(err)
+		if conn, err = ldap.Dial("tcp", config.Host.Host); err != nil {
+			log.Panicln(err)
 		}
-		defer conn.Close()
 
 		if err := conn.StartTLS(configureTLS(config.Host)); err != nil {
 			log.Println("Could not connect via STARTTLS")
 		}
 	}
 
-	if err := conn.Bind(*user, *password); err != nil {
-		log.Fatal(err)
+	if err = conn.Bind(config.User, config.Pass); err != nil {
+		log.Panicln(err)
 	}
 
-	return conn
+	return conn, nil
 }
 
 func configureTLS(u *url.URL) *tls.Config {
@@ -45,7 +41,7 @@ func configureTLS(u *url.URL) *tls.Config {
 
 	if *cafile != "" {
 		// Read in the cert file
-		certs, err := ioutil.ReadFile(*cafile)
+		certs, err := os.ReadFile(*cafile)
 		if err != nil {
 			log.Fatalf("Failed to append %q to RootCAs: %v", *cafile, err)
 		}
