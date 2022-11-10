@@ -1,14 +1,9 @@
 package main
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net"
-	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -35,42 +30,9 @@ func main() {
 		return
 	}
 
-	loadDefaultConfig()
+	config := loadConfig()
+	conn := connectLdap(config)
 
-	u, err := url.Parse(*host)
-	if err != nil {
-		log.Fatal(err)
-	}
-	port, err := net.LookupPort("tcp", u.Scheme)
-	if err != nil {
-		port = 389
-	}
-
-	var conn *ldap.Conn
-
-	if u.Scheme == "ldaps" {
-		conn, err = ldap.DialTLS("tcp", u.Hostname()+":"+strconv.Itoa(port), configureTLS(u))
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer conn.Close()
-	} else {
-		conn, err = ldap.Dial("tcp", u.Hostname()+":"+strconv.Itoa(port))
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer conn.Close()
-
-		err = conn.StartTLS(configureTLS(u))
-		if err != nil {
-			log.Println("Could not connect via STARTTLS")
-		}
-	}
-
-	err = conn.Bind(*user, *password)
-	if err != nil {
-		log.Fatal(err)
-	}
 	searchRequest := ldap.NewSearchRequest(
 		"cn=Monitor",
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
@@ -94,12 +56,12 @@ func main() {
 		}
 	}
 
-	hostname, err := os.Hostname()
+	hostname, _ := os.Hostname()
 
 	tags := []string{
 		"dirsrv",
-		"server=" + u.Hostname(),
-		"port=" + strconv.Itoa(port),
+		"server=" + config.Host.Hostname(),
+		"port=" + config.Host.Port(),
 		"host=" + hostname,
 	}
 
@@ -110,32 +72,4 @@ func main() {
 	}
 
 	fmt.Println(" " + strconv.FormatInt(time.Now().UnixNano(), 10))
-}
-
-func configureTLS(u *url.URL) *tls.Config {
-	// Get the SystemCertPool, continue with an empty pool on error
-	rootCAs, _ := x509.SystemCertPool()
-	if rootCAs == nil {
-		rootCAs = x509.NewCertPool()
-	}
-
-	if *cafile != "" {
-		// Read in the cert file
-		certs, err := ioutil.ReadFile(*cafile)
-		if err != nil {
-			log.Fatalf("Failed to append %q to RootCAs: %v", *cafile, err)
-		}
-
-		// Append our cert to the system pool
-		if ok := rootCAs.AppendCertsFromPEM(certs); !ok {
-			log.Println("No certs appended, using system certs only")
-		}
-	}
-
-	// Trust the augmented cert pool in our client
-	return &tls.Config{
-		InsecureSkipVerify: *insecure,
-		RootCAs:            rootCAs,
-		ServerName:         u.Hostname(),
-	}
 }
