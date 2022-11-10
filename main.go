@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -48,10 +49,15 @@ func main() {
 
 	values := make(map[string]int)
 
-	for _, e := range sr.Entries {
-		for _, a := range e.Attributes {
-			if n, e := strconv.Atoi(a.Values[0]); e == nil {
-				values[a.Name] = n
+	subMetric := regexp.MustCompile(`(-\d+)$`)
+	for _, entries := range sr.Entries {
+		for _, attribute := range entries.Attributes {
+			if subMetric.MatchString(attribute.Name) {
+				continue
+			}
+
+			if n, err := strconv.Atoi(attribute.Values[0]); err == nil {
+				values[attribute.Name] = n
 			}
 		}
 	}
