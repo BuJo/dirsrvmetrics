@@ -15,17 +15,19 @@ type Config struct {
 	Host *url.URL
 	User string
 	Pass string
+	Base string
 }
 
 func loadConfig() Config {
 	if noinit := os.Getenv("LDAPNOINIT"); noinit != "" || *user != "" && *conffile == "" {
-		return Config{parseUrl(*host), *user, *password}
+		return Config{parseUrl(*host), *user, *password, "cn=Monitor"}
 	}
 
 	home := os.Getenv("HOME")
 
 	filepaths := []string{
 		os.Getenv("LDAPCONF"),
+		"./.ldaprc",
 		"./ldaprc",
 		"/etc/openldap/ldap.conf",
 		home + "/.ldaprc",
@@ -76,6 +78,8 @@ func setConfig(name string, value string, config *Config) {
 		config.User = value
 	case "BINDPW":
 		config.Pass = value
+	case "BASE":
+		config.Base = value
 	}
 }
 

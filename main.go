@@ -36,7 +36,7 @@ func main() {
 	defer conn.Close()
 
 	searchRequest := ldap.NewSearchRequest(
-		"cn=Monitor",
+		config.Base,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		"(objectClass=top)",
 		[]string{},
