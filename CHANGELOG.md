@@ -1,6 +1,11 @@
 Changes
 =======
 
+## v0.7
+
+* Make monitoring base configurable
+* Skip collecting metrics for attributes ending with numbers
+
 ## v0.6
 
 * Maintenance release.
