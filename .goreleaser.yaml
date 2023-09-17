@@ -10,7 +10,7 @@ builds:
   - <<: &build_defaults
       binary: dirsrvmetrics
       # The single main entrypoint binary for dirsrvmetrics
-      main: dirsrvmetrics
+      main: ./cmd/dirsrvmetrics
       env:
         # We have no C dependencies
         - CGO_ENABLED=0
@@ -18,7 +18,7 @@ builds:
       mod_timestamp: '{{ .CommitTimestamp }}'
       ldflags:
         - -s -w
-        - -X {{.ModulePath}}/main.version={{.Version}}
+        - -X {{.ModulePath}}/cmd/dirsrvmetrics/main.version={{.Version}}
     id: linux
     goos:
       - linux
@@ -32,7 +32,7 @@ snapshot:
 
 # Configure what goes into the archives
 archives:
-  - <<:
+  - <<: &archive_defaults
       name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
       # Additonally packaged files
       files:
