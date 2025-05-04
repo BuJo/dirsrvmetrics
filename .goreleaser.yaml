@@ -7,7 +7,7 @@ before:
 # These are the final binaries, that we want to create
 builds:
   # This first linux build also contains the defaults used for all other platforms
-  - <<: &build_defaults
+  - <<:
       binary: dirsrvmetrics
       # The single main entrypoint binary for dirsrvmetrics
       main: ./cmd/dirsrvmetrics
@@ -32,7 +32,7 @@ snapshot:
 
 # Configure what goes into the archives
 archives:
-  - <<: &archive_defaults
+  - <<:
       name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
       # Additonally packaged files
       files:
@@ -40,8 +40,8 @@ archives:
         - README*
         - CHANGELOG*
     id: nix
-    builds: [ linux ]
-    format: tar.gz
+    ids: [ linux ]
+    formats: ['tar.gz']
 
 nfpms:
   - file_name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Arch }}'
