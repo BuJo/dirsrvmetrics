@@ -1,6 +1,10 @@
 Changes
 =======
 
+## v0.8.0
+
+* Maintenance release
+
 ## v0.7
 
 * Make monitoring base configurable
@@ -8,7 +12,7 @@ Changes
 
 ## v0.6
 
-* Maintenance release.
+* Maintenance release
 
 ## v0.5
 
